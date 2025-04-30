@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Leaf, Upload, AlertCircle, Info, Loader2 } from "lucide-react"
+import { ArrowLeft, Leaf, Upload, AlertCircle, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,8 +24,6 @@ export default function UploadPage() {
     species?: string
     condition?: string
     className?: string
-    isMock?: boolean
-    error?: string
   } | null>(null)
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,11 +50,6 @@ export default function UploadPage() {
 
     try {
       const analysisResult = await analyzeImage(selectedImage)
-
-      if (analysisResult.error) {
-        setError(analysisResult.error)
-      }
-
       setResult(analysisResult)
     } catch (error) {
       console.error("Error analyzing image:", error)
@@ -64,14 +57,6 @@ export default function UploadPage() {
     } finally {
       setIsAnalyzing(false)
     }
-  }
-
-  // Function to format condition text for display
-  const formatCondition = (condition: string) => {
-    return condition
-      .replace(/_/g, " ")
-      .replace("Two spotted spider mite", "Two-spotted Spider Mite")
-      .replace("Gray leaf spot", "Gray Leaf Spot")
   }
 
   return (
@@ -172,15 +157,6 @@ export default function UploadPage() {
                 </div>
               ) : result ? (
                 <div className="space-y-4">
-                  {result.isMock && (
-                    <Alert className="mb-4 bg-amber-50 border-amber-200">
-                      <Info className="h-4 w-4 text-amber-600" />
-                      <AlertDescription className="text-amber-800">
-                        Note: This is a demonstration result. The actual model could not be used.
-                      </AlertDescription>
-                    </Alert>
-                  )}
-
                   <div
                     className={`text-center p-4 rounded-lg ${
                       result.status === "Healthy" ? "bg-green-100" : "bg-red-100"
@@ -196,25 +172,11 @@ export default function UploadPage() {
                     </p>
 
                     {result.condition && result.condition !== "healthy" && (
-                      <p className="text-gray-700 mt-1">Condition: {formatCondition(result.condition)}</p>
+                      <p className="text-gray-700 mt-1">Condition: {result.condition.replace(/_/g, " ")}</p>
                     )}
 
                     <div className="mt-3 space-y-1">
                       <p className="text-sm text-gray-600">Confidence: {result.confidence}%</p>
-                    </div>
-
-                    <div className="mt-4 p-3 bg-gray-50 rounded text-left">
-                      <p className="text-xs font-mono text-gray-500">
-                        {JSON.stringify(
-                          {
-                            species: result.species || result.plant,
-                            condition: result.condition || result.status,
-                            isMock: result.isMock,
-                          },
-                          null,
-                          2,
-                        )}
-                      </p>
                     </div>
                   </div>
 

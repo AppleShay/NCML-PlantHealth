@@ -17,65 +17,41 @@ export async function analyzeImage(imageData: string): Promise<{
     const formData = new FormData()
     formData.append("image", blob)
 
-    // Send to API with longer timeout
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+    // Send to API
+    const response = await fetch("/api/analyze", {
+      method: "POST",
+      body: formData,
+    })
 
-    try {
-      const response = await fetch("/api/analyze", {
-        method: "POST",
-        body: formData,
-        signal: controller.signal,
-      })
+    // Check if the response is JSON
+    const contentType = response.headers.get("content-type")
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await response.text()
+      throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}...`)
+    }
 
-      clearTimeout(timeoutId)
+    const result = await response.json()
 
-      // Check if the response is JSON
-      const contentType = response.headers.get("content-type")
-      if (!contentType || !contentType.includes("application/json")) {
-        // If not JSON, get the text and throw an error
-        const text = await response.text()
-        throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}...`)
-      }
+    if (!response.ok) {
+      throw new Error(result.error || `API error: ${response.status}`)
+    }
 
-      const result = await response.json()
+    if (result.error) {
+      throw new Error(result.error)
+    }
 
-      if (!response.ok) {
-        console.error("API error:", result)
-        throw new Error(result.error || `API error: ${response.status}`)
-      }
-
-      if (result.error) {
-        console.warn("API warning:", result.error)
-      }
-
-      // Map the API response to our expected format
-      return {
-        plant: result.species || "Unknown",
-        status: result.condition === "healthy" ? "Healthy" : "Diseased",
-        confidence: result.confidence || 0,
-        species: result.species || "Unknown",
-        condition: result.condition || "Unknown",
-        className: result.className,
-        isMock: result.isMock || false,
-        error: result.error, // Pass through any error message
-      }
-    } catch (fetchError) {
-      clearTimeout(timeoutId)
-      throw fetchError
+    // Map the API response to our expected format
+    return {
+      plant: result.species,
+      status: result.condition === "healthy" ? "Healthy" : "Diseased",
+      confidence: result.confidence || 0,
+      species: result.species,
+      condition: result.condition,
+      className: result.className,
+      isMock: result.isMock || false,
     }
   } catch (error) {
     console.error("Error analyzing image:", error)
-
-    // Return error information along with fallback data
-    return {
-      plant: "Unknown",
-      status: "Unknown",
-      confidence: 0,
-      species: "Unknown",
-      condition: "Unknown",
-      isMock: true,
-      error: error.message || "Unknown error occurred",
-    }
+    throw error
   }
 }
