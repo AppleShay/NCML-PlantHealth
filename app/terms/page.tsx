@@ -144,8 +144,8 @@ export default function TermsPage() {
               at:
             </p>
             <p className="mt-2">
-              <a href="mailto:contact@planthealth.example.com" className="text-green-600 hover:underline">
-                contact@planthealth.example.com
+              <a href="mailto:sherotowshaw@gmail.com" className="text-green-600 hover:underline">
+                sherotowshaw@gmail.com
               </a>
             </p>
           </div>

@@ -3,7 +3,7 @@ import Image from "next/image"
 import { ArrowLeft, Leaf, Mail, Github, Linkedin, GraduationCap } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 
 export default function ContactPage() {
   return (
@@ -60,27 +60,26 @@ export default function ContactPage() {
                 </div>
               </div>
               <CardHeader className="pt-20 text-center">
-                <CardTitle className="text-green-800">Student Name 1</CardTitle>
-                <CardDescription>Developer & ML Engineer</CardDescription>
+                <CardTitle className="text-green-800">Shaheryar</CardTitle>
+                <CardDescription>Department of IT, Uppsala University, Sweden</CardDescription>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-gray-600 mb-4">
-                  Computer Science student specializing in Machine Learning and Computer Vision. Responsible for CNN
-                  model development and training.
+                  Developer and Machine Learning Engineer responsible for CNN model development and training.
                 </p>
                 <div className="flex justify-center space-x-4">
                   <Button variant="outline" size="icon" className="rounded-full" asChild>
-                    <a href="mailto:student1@university.edu" aria-label="Email Student 1">
+                    <a href="mailto:sherotowshaw@gmail.com" aria-label="Email Shaheryar">
                       <Mail className="h-4 w-4 text-green-600" />
                     </a>
                   </Button>
                   <Button variant="outline" size="icon" className="rounded-full" asChild>
-                    <a href="#" aria-label="GitHub profile for Student 1">
+                    <a href="#" aria-label="GitHub profile for Shaheryar">
                       <Github className="h-4 w-4 text-green-600" />
                     </a>
                   </Button>
                   <Button variant="outline" size="icon" className="rounded-full" asChild>
-                    <a href="#" aria-label="LinkedIn profile for Student 1">
+                    <a href="#" aria-label="LinkedIn profile for Shaheryar">
                       <Linkedin className="h-4 w-4 text-green-600" />
                     </a>
                   </Button>
@@ -105,27 +104,26 @@ export default function ContactPage() {
                 </div>
               </div>
               <CardHeader className="pt-20 text-center">
-                <CardTitle className="text-green-800">Student Name 2</CardTitle>
-                <CardDescription>Developer & Frontend Engineer</CardDescription>
+                <CardTitle className="text-green-800">Feruz Redi</CardTitle>
+                <CardDescription>Department of IT, Uppsala University</CardDescription>
               </CardHeader>
               <CardContent className="text-center">
                 <p className="text-gray-600 mb-4">
-                  Computer Science student with expertise in web development and UI/UX design. Responsible for the web
-                  application and model integration.
+                  Developer and Frontend Engineer responsible for the web application and model integration.
                 </p>
                 <div className="flex justify-center space-x-4">
                   <Button variant="outline" size="icon" className="rounded-full" asChild>
-                    <a href="mailto:student2@university.edu" aria-label="Email Student 2">
+                    <a href="mailto:sherotowshaw@gmail.com" aria-label="Email Feruz Redi">
                       <Mail className="h-4 w-4 text-green-600" />
                     </a>
                   </Button>
                   <Button variant="outline" size="icon" className="rounded-full" asChild>
-                    <a href="#" aria-label="GitHub profile for Student 2">
+                    <a href="#" aria-label="GitHub profile for Feruz Redi">
                       <Github className="h-4 w-4 text-green-600" />
                     </a>
                   </Button>
                   <Button variant="outline" size="icon" className="rounded-full" asChild>
-                    <a href="#" aria-label="LinkedIn profile for Student 2">
+                    <a href="#" aria-label="LinkedIn profile for Feruz Redi">
                       <Linkedin className="h-4 w-4 text-green-600" />
                     </a>
                   </Button>
@@ -155,16 +153,15 @@ export default function ContactPage() {
                   />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-green-800">Professor Name</h3>
-                  <p className="text-gray-600 mt-1">Department of Computer Science</p>
+                  <h3 className="text-xl font-bold text-green-800">George-Alexandru Stoian</h3>
+                  <p className="text-gray-600 mt-1">Department of IT</p>
                   <p className="text-gray-600 mt-4">
-                    Specializing in Machine Learning and Computer Vision with a focus on agricultural applications.
-                    Providing guidance and expertise for the NCML project on plant disease detection.
+                    Project supervisor providing guidance and expertise for the plant disease detection project.
                   </p>
                   <div className="mt-4 flex items-center">
                     <Mail className="h-4 w-4 text-green-600 mr-2" />
-                    <a href="mailto:professor@university.edu" className="text-green-600 hover:underline">
-                      professor@university.edu
+                    <a href="mailto:sherotowshaw@gmail.com" className="text-green-600 hover:underline">
+                      sherotowshaw@gmail.com
                     </a>
                   </div>
                 </div>
@@ -179,7 +176,7 @@ export default function ContactPage() {
                 <span className="font-semibold">Course:</span> Natural Computation for Machine Learning (NCML)
               </p>
               <p className="text-gray-600">
-                <span className="font-semibold">University:</span> [Your University Name]
+                <span className="font-semibold">University:</span> Uppsala University
               </p>
               <p className="text-gray-600">
                 <span className="font-semibold">Academic Year:</span> 2023-2024

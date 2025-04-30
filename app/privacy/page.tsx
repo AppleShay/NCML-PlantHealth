@@ -82,7 +82,7 @@ export default function PrivacyPage() {
               </p>
               <p className="mt-2">
                 <a
-                  href="https://www.kaggle.com/datasets/emmarex/plantdisease"
+                  href="https://www.kaggle.com/datasets/vipoooool/new-plant-diseases-dataset"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-green-600 hover:underline"
@@ -156,8 +156,8 @@ export default function PrivacyPage() {
             <h2 className="text-xl font-semibold text-green-800 mt-8 mb-4">10. Contact Us</h2>
             <p>If you have any questions about this Privacy Policy or our data practices, please contact us at:</p>
             <p className="mt-2">
-              <a href="mailto:privacy@planthealth.example.com" className="text-green-600 hover:underline">
-                privacy@planthealth.example.com
+              <a href="mailto:sherotowshaw@gmail.com" className="text-green-600 hover:underline">
+                sherotowshaw@gmail.com
               </a>
             </p>
           </div>
