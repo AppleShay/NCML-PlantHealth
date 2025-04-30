@@ -49,6 +49,7 @@ const classes = [
 const MODEL_URL =
   process.env.MODEL_URL || "https://my-plant-models-12345.s3.eu-north-1.amazonaws.com/plant_disease_resnet18.onnx"
 
+// Wrap the entire function body in a try-catch to ensure we always return valid JSON
 export async function POST(request: NextRequest) {
   try {
     // Get the image data from the request
@@ -112,7 +113,11 @@ export async function POST(request: NextRequest) {
           })
         } catch (modelError) {
           console.error("Error with model inference:", modelError)
-          return mockResponse()
+          return NextResponse.json({
+            error: `Model inference error: ${modelError.message}`,
+            isMock: true,
+            ...mockResponse().json(),
+          })
         }
       } else {
         // In development/preview, return mock data
@@ -120,11 +125,25 @@ export async function POST(request: NextRequest) {
       }
     } catch (processingError) {
       console.error("Error processing image:", processingError)
-      return mockResponse()
+      return NextResponse.json({
+        error: `Image processing error: ${processingError.message}`,
+        isMock: true,
+        ...mockResponse().json(),
+      })
     }
   } catch (error) {
     console.error("Error handling request:", error)
-    return NextResponse.json({ error: "Failed to process request" }, { status: 500 })
+    // Always return a valid JSON response, even for server errors
+    return NextResponse.json(
+      {
+        error: `Server error: ${error.message || "Unknown error"}`,
+        isMock: true,
+        species: "Error",
+        condition: "Error",
+        confidence: 0,
+      },
+      { status: 500 },
+    )
   }
 }
 
@@ -166,15 +185,15 @@ async function preprocessImage(buffer: Buffer): Promise<Float32Array> {
   return rgbData
 }
 
-// Return a mock response
+// Update the mockResponse function to return a NextResponse object directly
 function mockResponse() {
   const randomIndex = Math.floor(Math.random() * classes.length)
   const className = classes[randomIndex]
   const [species, condition] = className.split("___")
 
   return NextResponse.json({
-    species: species.replace(",_", " "),
-    condition: condition.replace("_", " "),
+    species: species.replace(",_", " ").replace(/_/g, " "),
+    condition: condition.replace("_", " ").replace(/_/g, " "),
     confidence: Math.floor(85 + Math.random() * 15),
     className,
     isMock: true,

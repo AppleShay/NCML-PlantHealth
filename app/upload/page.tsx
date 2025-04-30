@@ -44,6 +44,7 @@ export default function UploadPage() {
     }
   }
 
+  // Update the handleAnalyze function to better handle errors
   const handleAnalyze = async () => {
     if (!selectedImage) return
 
@@ -55,9 +56,13 @@ export default function UploadPage() {
 
       if (analysisResult.error) {
         setError(analysisResult.error)
+        // Still set the result if we have mock data
+        if (analysisResult.species !== "Unknown") {
+          setResult(analysisResult)
+        }
+      } else {
+        setResult(analysisResult)
       }
-
-      setResult(analysisResult)
     } catch (error) {
       console.error("Error analyzing image:", error)
       setError(error instanceof Error ? error.message : "Failed to analyze the image. Please try again.")
@@ -150,6 +155,13 @@ export default function UploadPage() {
             <CardContent>
               {result ? (
                 <div className="space-y-4">
+                  {error && (
+                    <Alert className="mb-4 bg-amber-50 border-amber-200">
+                      <AlertCircle className="h-4 w-4 text-amber-600" />
+                      <AlertDescription className="text-amber-800">Warning: {error}</AlertDescription>
+                    </Alert>
+                  )}
+
                   {result.isMock && (
                     <Alert className="mb-4 bg-amber-50 border-amber-200">
                       <Info className="h-4 w-4 text-amber-600" />
@@ -188,6 +200,7 @@ export default function UploadPage() {
                           {
                             species: result.species || result.plant,
                             condition: result.condition || result.status,
+                            isMock: result.isMock,
                           },
                           null,
                           2,
