@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Leaf, Upload, AlertCircle, Info } from "lucide-react"
+import { ArrowLeft, Leaf, Upload, AlertCircle, Info, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -44,7 +44,6 @@ export default function UploadPage() {
     }
   }
 
-  // Update the handleAnalyze function to better handle errors
   const handleAnalyze = async () => {
     if (!selectedImage) return
 
@@ -56,19 +55,23 @@ export default function UploadPage() {
 
       if (analysisResult.error) {
         setError(analysisResult.error)
-        // Still set the result if we have mock data
-        if (analysisResult.species !== "Unknown") {
-          setResult(analysisResult)
-        }
-      } else {
-        setResult(analysisResult)
       }
+
+      setResult(analysisResult)
     } catch (error) {
       console.error("Error analyzing image:", error)
       setError(error instanceof Error ? error.message : "Failed to analyze the image. Please try again.")
     } finally {
       setIsAnalyzing(false)
     }
+  }
+
+  // Function to format condition text for display
+  const formatCondition = (condition: string) => {
+    return condition
+      .replace(/_/g, " ")
+      .replace("Two spotted spider mite", "Two-spotted Spider Mite")
+      .replace("Gray leaf spot", "Gray Leaf Spot")
   }
 
   return (
@@ -131,6 +134,7 @@ export default function UploadPage() {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                     onChange={handleImageChange}
                     accept="image/*"
+                    disabled={isAnalyzing}
                   />
                 </div>
                 {fileName && <p className="text-sm text-gray-500">{fileName}</p>}
@@ -142,7 +146,14 @@ export default function UploadPage() {
                 onClick={handleAnalyze}
                 disabled={!selectedImage || isAnalyzing}
               >
-                {isAnalyzing ? "Analyzing..." : "Analyze Image"}
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  "Analyze Image"
+                )}
               </Button>
             </CardFooter>
           </Card>
@@ -153,21 +164,19 @@ export default function UploadPage() {
               <CardDescription>The AI model's assessment of your plant</CardDescription>
             </CardHeader>
             <CardContent>
-              {result ? (
+              {isAnalyzing ? (
+                <div className="h-64 flex flex-col items-center justify-center text-gray-600">
+                  <Loader2 className="h-12 w-12 animate-spin text-green-600 mb-4" />
+                  <p>Processing your image...</p>
+                  <p className="text-sm text-gray-500 mt-2">This may take a few moments</p>
+                </div>
+              ) : result ? (
                 <div className="space-y-4">
-                  {error && (
-                    <Alert className="mb-4 bg-amber-50 border-amber-200">
-                      <AlertCircle className="h-4 w-4 text-amber-600" />
-                      <AlertDescription className="text-amber-800">Warning: {error}</AlertDescription>
-                    </Alert>
-                  )}
-
                   {result.isMock && (
                     <Alert className="mb-4 bg-amber-50 border-amber-200">
                       <Info className="h-4 w-4 text-amber-600" />
                       <AlertDescription className="text-amber-800">
-                        Note: This is a demonstration result. For actual predictions, deploy the application with your
-                        model.
+                        Note: This is a demonstration result. The actual model could not be used.
                       </AlertDescription>
                     </Alert>
                   )}
@@ -187,7 +196,7 @@ export default function UploadPage() {
                     </p>
 
                     {result.condition && result.condition !== "healthy" && (
-                      <p className="text-gray-700 mt-1">Condition: {result.condition}</p>
+                      <p className="text-gray-700 mt-1">Condition: {formatCondition(result.condition)}</p>
                     )}
 
                     <div className="mt-3 space-y-1">

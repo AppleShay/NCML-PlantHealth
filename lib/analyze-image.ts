@@ -17,42 +17,52 @@ export async function analyzeImage(imageData: string): Promise<{
     const formData = new FormData()
     formData.append("image", blob)
 
-    // Send to API
-    const response = await fetch("/api/analyze", {
-      method: "POST",
-      body: formData,
-    })
+    // Send to API with longer timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
 
-    // Check if the response is JSON
-    const contentType = response.headers.get("content-type")
-    if (!contentType || !contentType.includes("application/json")) {
-      // If not JSON, get the text and throw an error
-      const text = await response.text()
-      throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}...`)
-    }
+    try {
+      const response = await fetch("/api/analyze", {
+        method: "POST",
+        body: formData,
+        signal: controller.signal,
+      })
 
-    const result = await response.json()
+      clearTimeout(timeoutId)
 
-    if (!response.ok) {
-      console.error("API error:", result)
-      throw new Error(result.error || `API error: ${response.status}`)
-    }
+      // Check if the response is JSON
+      const contentType = response.headers.get("content-type")
+      if (!contentType || !contentType.includes("application/json")) {
+        // If not JSON, get the text and throw an error
+        const text = await response.text()
+        throw new Error(`Server returned non-JSON response: ${text.substring(0, 100)}...`)
+      }
 
-    if (result.error) {
-      console.warn("API warning:", result.error)
-      // Don't throw here, use the mock data that should be included
-    }
+      const result = await response.json()
 
-    // Map the API response to our expected format
-    return {
-      plant: result.species || "Unknown",
-      status: result.condition === "healthy" ? "Healthy" : "Diseased",
-      confidence: result.confidence || 0,
-      species: result.species || "Unknown",
-      condition: result.condition || "Unknown",
-      className: result.className,
-      isMock: result.isMock || false,
-      error: result.error, // Pass through any error message
+      if (!response.ok) {
+        console.error("API error:", result)
+        throw new Error(result.error || `API error: ${response.status}`)
+      }
+
+      if (result.error) {
+        console.warn("API warning:", result.error)
+      }
+
+      // Map the API response to our expected format
+      return {
+        plant: result.species || "Unknown",
+        status: result.condition === "healthy" ? "Healthy" : "Diseased",
+        confidence: result.confidence || 0,
+        species: result.species || "Unknown",
+        condition: result.condition || "Unknown",
+        className: result.className,
+        isMock: result.isMock || false,
+        error: result.error, // Pass through any error message
+      }
+    } catch (fetchError) {
+      clearTimeout(timeoutId)
+      throw fetchError
     }
   } catch (error) {
     console.error("Error analyzing image:", error)
