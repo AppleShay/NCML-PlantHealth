@@ -5,7 +5,6 @@ export async function analyzeImage(imageData: string): Promise<{
   species: string
   condition: string
   className?: string
-  isMock?: boolean
   error?: string
 }> {
   try {
@@ -48,7 +47,6 @@ export async function analyzeImage(imageData: string): Promise<{
       species: result.species,
       condition: result.condition,
       className: result.className,
-      isMock: result.isMock || false,
     }
   } catch (error) {
     console.error("Error analyzing image:", error)

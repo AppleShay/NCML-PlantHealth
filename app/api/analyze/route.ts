@@ -4,8 +4,8 @@ import sharp from "sharp"
 import fs from "fs"
 import path from "path"
 
-// The model URL from environment variable
-const MODEL_URL = process.env.MODEL_URL
+// Hardcode the model URL as provided
+const MODEL_URL = "https://my-plant-models-12345.s3.eu-north-1.amazonaws.com/plant_disease_resnet18.onnx"
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,10 +39,6 @@ export async function POST(request: NextRequest) {
 
     try {
       // Fetch the model
-      if (!MODEL_URL) {
-        return NextResponse.json({ error: "MODEL_URL environment variable not set" }, { status: 500 })
-      }
-
       console.log("Fetching model from URL:", MODEL_URL)
       const modelResponse = await fetch(MODEL_URL)
 
