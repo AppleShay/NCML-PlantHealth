@@ -5,12 +5,13 @@ import type React from "react"
 import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowLeft, Leaf, Upload, AlertCircle, Loader2 } from "lucide-react"
+import { ArrowLeft, Leaf, Upload, AlertCircle, Loader2, CheckCircle2, XCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { analyzeImage } from "@/lib/analyze-image"
+import { getRecommendations } from "@/lib/disease-recommendations"
 
 export default function UploadPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
@@ -58,6 +59,9 @@ export default function UploadPage() {
       setIsAnalyzing(false)
     }
   }
+
+  // Get specific recommendations based on the condition
+  const recommendations = result?.condition ? getRecommendations(result.condition) : null
 
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-green-50 to-green-100">
@@ -156,20 +160,27 @@ export default function UploadPage() {
                   <p className="text-sm text-gray-500 mt-2">This may take a few moments</p>
                 </div>
               ) : result ? (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <div
                     className={`text-center p-4 rounded-lg ${
                       result.status === "Healthy" ? "bg-green-100" : "bg-red-100"
                     }`}
                   >
                     <h3 className="text-2xl font-bold mb-2">{result.plant}</h3>
-                    <p
-                      className={`text-xl font-semibold ${
-                        result.status === "Healthy" ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {result.status}
-                    </p>
+                    <div className="flex items-center justify-center mb-2">
+                      {result.status === "Healthy" ? (
+                        <CheckCircle2 className="h-6 w-6 text-green-600 mr-2" />
+                      ) : (
+                        <XCircle className="h-6 w-6 text-red-600 mr-2" />
+                      )}
+                      <p
+                        className={`text-xl font-semibold ${
+                          result.status === "Healthy" ? "text-green-600" : "text-red-600"
+                        }`}
+                      >
+                        {result.status}
+                      </p>
+                    </div>
 
                     {result.condition && result.condition !== "healthy" && (
                       <p className="text-gray-700 mt-1">Condition: {result.condition.replace(/_/g, " ")}</p>
@@ -180,15 +191,33 @@ export default function UploadPage() {
                     </div>
                   </div>
 
-                  {result.status === "Diseased" && (
-                    <div className="p-4 bg-amber-50 rounded-lg">
-                      <h4 className="font-semibold text-amber-800">Recommendations:</h4>
-                      <ul className="list-disc list-inside text-sm text-gray-600 mt-2">
-                        <li>Isolate the affected plant to prevent spread</li>
-                        <li>Remove and dispose of severely affected leaves</li>
-                        <li>Consider appropriate fungicide or treatment</li>
-                        <li>Ensure proper air circulation around plants</li>
-                      </ul>
+                  {recommendations && (
+                    <div className="space-y-4">
+                      {/* Disease description */}
+                      <div className="bg-white p-4 rounded-lg border border-gray-200">
+                        <h4 className="font-semibold text-green-800 mb-2">{recommendations.title}</h4>
+                        <p className="text-gray-600 text-sm">{recommendations.description}</p>
+                      </div>
+
+                      {/* Treatment recommendations */}
+                      <div className="bg-amber-50 p-4 rounded-lg border border-amber-100">
+                        <h4 className="font-semibold text-amber-800 mb-2">Treatment Recommendations:</h4>
+                        <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                          {recommendations.treatments.map((treatment, index) => (
+                            <li key={index}>{treatment}</li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Prevention recommendations */}
+                      <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                        <h4 className="font-semibold text-blue-800 mb-2">Prevention Tips:</h4>
+                        <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                          {recommendations.prevention.map((tip, index) => (
+                            <li key={index}>{tip}</li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   )}
                 </div>
