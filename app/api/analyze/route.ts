@@ -54,6 +54,10 @@ export async function POST(request: NextRequest) {
       const session = await ort.InferenceSession.create(modelBuffer)
       console.log("ONNX session created successfully")
 
+      // Log the input and output names from the model
+      console.log("Model input names:", session.inputNames)
+      console.log("Model output names:", session.outputNames)
+
       // Process the image exactly like the Python code
       // 1. Resize to 224x224
       const resizedImageBuffer = await sharp(buffer).resize(224, 224).raw().toBuffer()
@@ -81,13 +85,19 @@ export async function POST(request: NextRequest) {
       console.log("Running inference...")
       const tensor = new ort.Tensor("float32", rgbData, [1, 3, 224, 224])
 
-      // Use the correct input name for your model
-      const feeds = { input: tensor }
+      // Use the first input name from the model instead of hardcoding "input"
+      const inputName = session.inputNames[0]
+      console.log("Using input name:", inputName)
+
+      const feeds = {}
+      feeds[inputName] = tensor
+
       const results = await session.run(feeds)
       console.log("Inference completed successfully")
 
       // 4. Process results exactly like the Python code
-      const outputTensor = results[session.outputNames[0]]
+      const outputName = session.outputNames[0]
+      const outputTensor = results[outputName]
       const output = outputTensor.data as Float32Array
 
       // Get the argmax (index of highest value)
